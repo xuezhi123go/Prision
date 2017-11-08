@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -24,6 +25,7 @@ import com.gkzxhn.prison.keda.utils.GKStateMannager;
 import com.gkzxhn.prison.keda.utils.NetWorkUtils;
 import com.gkzxhn.prison.keda.vconf.VConferenceManager;
 import com.gkzxhn.prison.presenter.CallUserPresenter;
+import com.gkzxhn.prison.utils.SPUtil;
 import com.gkzxhn.prison.view.ICallUserView;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.StatusCode;
@@ -46,13 +48,17 @@ public class CallUserActivity extends SuperActivity implements ICallUserView {
     private DotsTextView tvLoading;
     private ImageView ivCard01, ivCard02;
     private CustomDialog mCustomDialog;
-    private final long DOWN_TIME = 20000;//倒计时 20秒
+    //倒计时 20秒
+    private final long DOWN_TIME = 20000;
     private ShowTerminalDialog mShowTerminalDialog;
     private ProgressDialog mProgress;
     private SharedPreferences preferences;
     private String phone = null;
     private String nickName = null, id = null;
-    private boolean isClickCall = false;//是否点击了呼叫按钮
+    //是否点击了呼叫按钮
+    private boolean isClickCall = false;
+    private String callAddress = "fangyuxing@zijingcloud.com";
+    private String showName = "suibian";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +73,12 @@ public class CallUserActivity extends SuperActivity implements ICallUserView {
         tvLoading = (DotsTextView) findViewById(R.id.common_loading_layout_tv_load);
         ivCard01 = (ImageView) findViewById(R.id.call_user_layout_iv_card_01);
         ivCard02 = (ImageView) findViewById(R.id.call_user_layout_iv_card_02);
+
+        if (!(TextUtils.isEmpty((CharSequence) SPUtil.get(CallUserActivity.this,"callAddress",""))
+                &&TextUtils.isEmpty((CharSequence) SPUtil.get(CallUserActivity.this,"showName","")))){
+            callAddress = (String) SPUtil.get(CallUserActivity.this,"callAddress","");
+            showName = (String) SPUtil.get(CallUserActivity.this,"showName","");
+        }
     }
 
     private void init() {
@@ -101,9 +113,12 @@ public class CallUserActivity extends SuperActivity implements ICallUserView {
     private void startVideoPage() {
         // 设置服务器器地址、显示名称、呼叫地址、呼叫密码；
         ZjVideoManager.getInstance().setDomain("cs.zijingcloud.com");
-        ZjVideoManager.getInstance().setDisplayName("suibian");
-        ZjVideoManager.getInstance().setAddress("fangyuxing@zijingcloud.com");
+        ZjVideoManager.getInstance().setDisplayName(showName);
+        ZjVideoManager.getInstance().setAddress(callAddress);
         ZjVideoManager.getInstance().setPwd("");
+        //ZjVideoManager.getInstance().openSpeaker(this,true);//监狱不用扬声器
+
+
         startActivity(new Intent(this, ZjVideoActivity.class));
 
     }
@@ -160,9 +175,13 @@ public class CallUserActivity extends SuperActivity implements ICallUserView {
 //                        if (!mCustomDialog.isShowing()) mCustomDialog.show();
 //                    }
 //                }else{
-                online();
+
+
+                //online();
+                startVideoPage();
 //                }
                 break;
+            default:
         }
     }
 
@@ -237,7 +256,7 @@ public class CallUserActivity extends SuperActivity implements ICallUserView {
 
         @Override
         public void onFinish() {
-            stopVConfVideo();
+            //stopVConfVideo();
         }
     };
 

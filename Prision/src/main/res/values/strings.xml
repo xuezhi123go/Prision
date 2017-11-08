@@ -90,8 +90,12 @@
     <string name="check_update">检查更新</string>
     <string name="setting_terminal_infor">设置终端信息</string>
     <string name="terminal_account">终端帐号</string>
+    <string name="call_address">呼叫地址</string>
+    <string name="show_name">显示名称</string>
     <string name="rate">码率</string>
     <string name="rate_colon">码率(K)\u0020</string>
+    <string name="please_input_call_address">请输入呼叫地址</string>
+    <string name="please_input_show_name">请输入显示名称</string>
     <string name="please_input_terminal_account">请输入终端帐号</string>
     <string name="alter_terminal_account_success">修改终端信息成功</string>
     <string name="terminal_account_not_available">此终端可不用，请重新设置</string>

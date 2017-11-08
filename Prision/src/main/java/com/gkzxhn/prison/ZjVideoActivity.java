@@ -1,5 +1,7 @@
 package com.gkzxhn.prison;
 
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -43,7 +45,11 @@ public class ZjVideoActivity extends AppCompatActivity implements DefaultHardwar
                 .setUseDeveloperSupport(false)
                 .setInitialLifecycleState(LifecycleState.RESUMED)
                 .build();
-
+        /*设置当前Activity的背景色*/
+        Resources res = getResources();
+        Drawable drawable = res.getDrawable(R.color.bkcolor);
+        this.getWindow().setBackgroundDrawable(drawable);
+        /*背景色设置结束*/
         // 注意这里的MyReactNativeApp必须对应“index.android.js”中的
         // “AppRegistry.registerComponent()”的第一个参数
         mReactRootView.startReactApplication(mReactInstanceManager, "zjAndroidRN", getLaunchOptions());

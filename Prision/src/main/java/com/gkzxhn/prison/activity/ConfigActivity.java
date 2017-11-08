@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,9 +19,8 @@ import android.widget.Spinner;
 import com.gkzxhn.prison.R;
 import com.gkzxhn.prison.common.Constants;
 import com.gkzxhn.prison.common.GKApplication;
-import com.gkzxhn.prison.keda.utils.GKStateMannager;
 import com.gkzxhn.prison.keda.utils.TruetouchGlobal;
-import com.gkzxhn.prison.utils.KDInitUtil;
+import com.gkzxhn.prison.utils.SPUtil;
 import com.starlight.mobile.android.lib.util.CommonHelper;
 
 /**
@@ -29,12 +29,19 @@ import com.starlight.mobile.android.lib.util.CommonHelper;
 
 public class ConfigActivity extends SuperActivity {
     private EditText etAccount;
+    private EditText callAddress;
+    private EditText showName;
     private Spinner mSpinner;
     private String[] mRateArray;
-    private String mRate=null;
+    private String mRate = null;
     private ProgressDialog mProgress;
     private SharedPreferences preferences;
-    private final long DOWN_TIME=20000;//倒计时 20秒
+    private final long DOWN_TIME = 20000;//倒计时 20秒
+    private String name = "suibian";
+    private String address = "fangyuxing@zijingcloud.com";
+    private String TAG = "ConfigActivity";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,11 +50,15 @@ public class ConfigActivity extends SuperActivity {
         init();
         registerReceiver();
     }
-    private void initControls(){
-        etAccount= (EditText) findViewById(R.id.config_layout_et_account);
-        mSpinner= (Spinner) findViewById(R.id.config_layout_sp_rate);
+
+    private void initControls() {
+        etAccount = (EditText) findViewById(R.id.config_layout_et_account);
+        mSpinner = (Spinner) findViewById(R.id.config_layout_sp_rate);
+        callAddress = (EditText) findViewById(R.id.config_layout_et_call_address);
+        showName = (EditText) findViewById(R.id.config_layout_et_show_name);
     }
-    private void init(){
+
+    private void init() {
         mProgress = ProgressDialog.show(this, null, getString(R.string.please_waiting));
         stopRefreshAnim();
         mRateArray = getResources().getStringArray(R.array.rate_array);
@@ -65,15 +76,23 @@ public class ConfigActivity extends SuperActivity {
 
             }
         });
-        int index=1;
-        preferences=getSharedPreferences(Constants.USER_TABLE, Context.MODE_PRIVATE);
-        String account=preferences.getString(Constants.TERMINAL_ACCOUNT,"");
-        if(account!=null&&account.length()>0) {
+        //判断当sp中有保存过的地址和昵称信息时自动填充进而edittext
+        if (!(TextUtils.isEmpty((CharSequence) SPUtil.get(ConfigActivity.this, "callAddress", ""))
+                && TextUtils.isEmpty((CharSequence) SPUtil.get(ConfigActivity.this, "showName", "")))) {
+            address = (String) SPUtil.get(ConfigActivity.this, "callAddress", "");
+            name = (String) SPUtil.get(ConfigActivity.this, "showName", "");
+        }
+        callAddress.setText(address);
+        showName.setText(name);
+        int index = 1;
+        preferences = getSharedPreferences(Constants.USER_TABLE, Context.MODE_PRIVATE);
+        String account = preferences.getString(Constants.TERMINAL_ACCOUNT, "");
+        if (account != null && account.length() > 0) {
             etAccount.setText(account);
-            for(int i = 0; i< mRateArray.length; i++){
-                String mRate= mRateArray[i];
-                if(mRate.equals(String.valueOf(GKApplication.getInstance().getTerminalRate()))){
-                    index=i;
+            for (int i = 0; i < mRateArray.length; i++) {
+                String mRate = mRateArray[i];
+                if (mRate.equals(String.valueOf(GKApplication.getInstance().getTerminalRate()))) {
+                    index = i;
                     break;
                 }
             }
@@ -81,69 +100,85 @@ public class ConfigActivity extends SuperActivity {
         mRate = mRateArray[index];
         mSpinner.setSelection(index);
     }
-    public void onClickListener(View view){
+
+    public void onClickListener(View view) {
         CommonHelper.clapseSoftInputMethod(this);
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.common_head_layout_iv_left:
                 finish();
                 break;
             case R.id.config_layout_btn_save:
+
+                address = callAddress.getText().toString().trim();
+                name = showName.getText().toString().trim();
                 String acc = etAccount.getText().toString().trim();
-                if (TextUtils.isEmpty(acc) ) {
+
+                if (TextUtils.isEmpty(address) || TextUtils.isEmpty(name)) {
+                    showToast("请补全信息");
+                } else {
+                    Log.e(TAG, "保存之前");
+                    SPUtil.put(ConfigActivity.this, "callAddress", address);
+                    SPUtil.put(ConfigActivity.this, "showName", name);
+                    Log.e(TAG, "保存之后");
+                }
+
+                if (TextUtils.isEmpty(acc)) {
                     showToast(R.string.please_input_terminal_account);
-                }else {
+                } else {
                     mTimer.start();
                     startRefreshAnim();
                     //退出终端平台，如果已经注册了终端平台
                     TruetouchGlobal.logOff();
-                    SharedPreferences.Editor editor=preferences.edit();
-                    editor.putString(Constants.TERMINAL_ACCOUNT,acc);
-                    editor.putInt(Constants.TERMINAL_RATE,Integer.valueOf(mRate));
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString(Constants.TERMINAL_ACCOUNT, acc);
+                    editor.putInt(Constants.TERMINAL_RATE, Integer.valueOf(mRate));
                     editor.commit();
-                    KDInitUtil.login();
+                    //KDInitUtil.login();
                 }
                 break;
+            default:
         }
     }
+
     public void startRefreshAnim() {
-        if(mProgress!=null&&!mProgress.isShowing())mProgress.show();
+        if (mProgress != null && !mProgress.isShowing()) mProgress.show();
     }
 
     public void stopRefreshAnim() {
-        if(mProgress!=null&&mProgress.isShowing())mProgress.dismiss();
+        if (mProgress != null && mProgress.isShowing()) mProgress.dismiss();
     }
-    private BroadcastReceiver mBroadcastReceiver=new BroadcastReceiver() {
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             stopRefreshAnim();
-            if(mTimer!=null) mTimer.cancel();
-            if(intent.getAction().equals(Constants.TERMINAL_FAILED_ACTION)){//GK注册失败
+            if (mTimer != null) mTimer.cancel();
+            if (intent.getAction().equals(Constants.TERMINAL_FAILED_ACTION)) {//GK注册失败
                 showToast(R.string.terminal_account_not_available);
                 //清除终端信息
-                SharedPreferences.Editor editor=preferences.edit();
-                editor.putString(Constants.TERMINAL_ACCOUNT,"");
-                editor.putInt(Constants.TERMINAL_RATE,512);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(Constants.TERMINAL_ACCOUNT, "");
+                editor.putInt(Constants.TERMINAL_RATE, 512);
                 editor.commit();
-            }else if(intent.getAction().equals(Constants.TERMINAL_SUCCESS_ACTION)){// GK 注册成功
+            } else if (intent.getAction().equals(Constants.TERMINAL_SUCCESS_ACTION)) {// GK 注册成功
                 ConfigActivity.this.setResult(RESULT_OK);
                 ConfigActivity.this.finish();
-            }else if(intent.getAction().equals(Constants.NIM_KIT_OUT)){
+            } else if (intent.getAction().equals(Constants.NIM_KIT_OUT)) {
                 finish();
             }
         }
     };
 
 
-
     /**
      * 注册广播监听器
      */
-    private void registerReceiver(){
-        IntentFilter intentFilter=new IntentFilter();
+    private void registerReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.TERMINAL_FAILED_ACTION);
         intentFilter.addAction(Constants.TERMINAL_SUCCESS_ACTION);
         intentFilter.addAction(Constants.NIM_KIT_OUT);
-        registerReceiver(mBroadcastReceiver,intentFilter);
+        registerReceiver(mBroadcastReceiver, intentFilter);
     }
 
     @Override
@@ -151,20 +186,22 @@ public class ConfigActivity extends SuperActivity {
         unregisterReceiver(mBroadcastReceiver);//注销广播监听器
         super.onDestroy();
     }
-    private CountDownTimer mTimer=new CountDownTimer(DOWN_TIME, 1000) {
+
+    private CountDownTimer mTimer = new CountDownTimer(DOWN_TIME, 1000) {
         @Override
         public void onTick(long millisUntilFinished) {
 //            long second = millisUntilFinished / 1000;
         }
+
         @Override
         public void onFinish() {
             stopRefreshAnim();
             showToast(R.string.terminal_account_not_available);
             //注册失败，清除
-            SharedPreferences sharedPreferences=GKApplication.getInstance().getSharedPreferences(Constants.USER_TABLE,Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor=sharedPreferences.edit();
-            editor.putString(Constants.TERMINAL_ACCOUNT,"");
-            editor.putInt(Constants.TERMINAL_RATE,512);
+            SharedPreferences sharedPreferences = GKApplication.getInstance().getSharedPreferences(Constants.USER_TABLE, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(Constants.TERMINAL_ACCOUNT, "");
+            editor.putInt(Constants.TERMINAL_RATE, 512);
             editor.commit();
         }
     };

@@ -52,7 +52,7 @@
         android:ellipsize="end"
         android:background="@android:color/white"
         android:layout_toRightOf="@+id/config_layout_tv_terminal_account_title"
-        android:layout_below="@+id/config_layout_tv_notice"
+        android:layout_below="@+id/config_layout_ch_head"
         android:hint="@string/please_input_terminal_account"
         />
 
@@ -100,9 +100,72 @@
         android:src="@mipmap/down"
         />
 
+    <TextView
+        android:id="@+id/config_layout_tv_call_address_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/config_layout_et_call_address"
+        android:layout_alignBottom="@+id/config_layout_et_call_address"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dip"
+        android:textColor="@color/common_gray_title_color"
+        android:layout_marginLeft="10dip"
+        android:paddingRight="10dip"
+        android:textSize="20sp"
+        android:background="@android:color/white"
+        android:text="@string/call_address"
+        />
+
+    <EditText
+        android:id="@+id/config_layout_et_call_address"
+        android:layout_width="match_parent"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:lines="1"
+        android:ellipsize="end"
+        android:background="@android:color/white"
+        android:layout_toRightOf="@+id/config_layout_tv_call_address_title"
+        android:layout_below="@+id/config_layout_sp_rate"
+        android:hint="@string/please_input_call_address"
+        />
+    <TextView
+        android:id="@+id/config_layout_tv_show_name_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/config_layout_et_show_name"
+        android:layout_alignBottom="@+id/config_layout_et_show_name"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dip"
+        android:textColor="@color/common_gray_title_color"
+        android:layout_marginLeft="10dip"
+        android:paddingRight="10dip"
+        android:textSize="20sp"
+        android:background="@android:color/white"
+        android:text="@string/show_name"
+        />
+
+    <EditText
+        android:id="@+id/config_layout_et_show_name"
+        android:layout_width="match_parent"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:lines="1"
+        android:ellipsize="end"
+        android:background="@android:color/white"
+        android:layout_toRightOf="@+id/config_layout_tv_show_name_title"
+        android:layout_below="@+id/config_layout_et_call_address"
+        android:hint="@string/please_input_show_name"
+        />
+
     <Button
         android:id="@+id/config_layout_btn_save"
-        android:layout_below="@+id/config_layout_tv_rate_title"
+        android:layout_below="@+id/config_layout_tv_show_name_title"
         android:text="@string/save"
         style="@style/common_blue_btn_style"/>
 </RelativeLayout>
