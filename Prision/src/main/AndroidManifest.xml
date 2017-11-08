@@ -2,38 +2,38 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gkzxhn.prison">
 
-    <uses-feature android:name="android.hardware.camera"/>
-    <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RESTART_PACKAGES"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.FLASHLIGHT"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- 控制呼吸灯，振动器等，用于新消息提醒 -->
     <!-- 外置存储存取权限 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <!-- 多媒体相关 -->
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <!-- 如果需要实时音视频通话模块，下面的权限也是必须的。否则，可以不加 -->
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <!-- SDK 权限申明, 第三方 APP 接入时，请将 com.netease.nim.demo 替换为自己的包名 -->
     <permission
         android:name="com.gkzxhn.prison.permission.RECEIVE_MSG"
-        android:protectionLevel="signature"/>
+        android:protectionLevel="signature" />
     <!-- 接收  SDK 消息广播权限， 第三方 APP 接入时，请将 com.netease.nim.demo 替换为自己的包名 -->
-    <uses-permission android:name="com.gkzxhn.prison.permission.RECEIVE_MSG"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.gkzxhn.prison.permission.RECEIVE_MSG" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -85,57 +85,63 @@
     <application
         android:name="com.gkzxhn.prison.common.GKApplication"
         android:allowBackup="true"
-        android:supportsRtl="true"
-        android:largeHeap="true"
         android:allowClearUserData="true"
-        android:persistent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
+        android:persistent="true"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.gkzxhn.prison.activity.SplashActivity"
-            android:screenOrientation="landscape"
+        <activity
+            android:name="com.gkzxhn.prison.activity.SplashActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan"
-            >
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <!--主页-->
-        <activity android:name="com.gkzxhn.prison.activity.MainActivity"
-            android:screenOrientation="landscape"
+        <activity
+            android:name="com.gkzxhn.prison.activity.MainActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan"
-            />
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan" />
         <!--登录-->
-        <activity android:name="com.gkzxhn.prison.activity.LoginActivity"
-            android:screenOrientation="landscape"
+        <activity
+            android:name="com.gkzxhn.prison.activity.LoginActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan"
-            />
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan" />
         <!--登录-->
-        <activity android:name="com.gkzxhn.prison.activity.CallUserActivity"
-            android:screenOrientation="landscape"
+        <activity
+            android:name="com.gkzxhn.prison.activity.CallUserActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan"
-            />
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan" />
         <!--设置-->
-        <activity android:name="com.gkzxhn.prison.activity.SettingActivity"
-            android:screenOrientation="landscape"
+        <activity
+            android:name="com.gkzxhn.prison.activity.SettingActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan"
-            />
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan" />
         <!--终端设置-->
-        <activity android:name="com.gkzxhn.prison.activity.ConfigActivity"
-            android:screenOrientation="landscape"
+        <activity
+            android:name="com.gkzxhn.prison.activity.ConfigActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan"
-            />
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden|adjustPan" />
+        <activity
+            android:name=".ZjVideoActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize" />
+
 
         <meta-data
             android:name="com.netease.nim.appKey"
-            android:value="87dae6933488de4bab789054a3a5c720"/>
+            android:value="87dae6933488de4bab789054a3a5c720" />
 
         <meta-data
             android:name="com.privatecustom.publiclibs.root"
@@ -150,10 +156,10 @@
         <!-- 声明云信后台服务，如需保持后台推送，使用独立进程效果会更好。 -->
         <service
             android:name="com.netease.nimlib.service.NimService"
-            android:process=":core"/>
+            android:process=":core" />
         <service
             android:name="com.netease.nimlib.service.NimService$Aux"
-            android:process=":core"/>
+            android:process=":core" />
 
         <!--
              云信SDK的监视系统启动和网络变化的广播接收器，用户开机自启动以及网络变化时候重新登录，
@@ -164,30 +170,30 @@
             android:exported="false"
             android:process=":core">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 
         <!-- 云信进程间通信 Receiver -->
-        <receiver android:name="com.netease.nimlib.service.ResponseReceiver"/>
+        <receiver android:name="com.netease.nimlib.service.ResponseReceiver" />
 
         <!-- 安卓保活配置 -->
         <service
             android:name="com.netease.cosine.core.CosineService"
-            android:process=":cosine"/>
+            android:process=":cosine" />
 
         <receiver
             android:name="com.netease.cosine.target.CosineReceiver"
             android:exported="true"
-            android:process=":cosine"/>
+            android:process=":cosine" />
 
         <meta-data
             android:name="com.netease.cosine.target"
-            android:value=""/>
+            android:value="" />
         <meta-data
             android:name="com.netease.cosine.target.receiver"
-            android:value="com.netease.nimlib.service.NimReceiver"/>
+            android:value="com.netease.nimlib.service.NimReceiver" />
 
 
         <!-- vconf -->
@@ -197,11 +203,11 @@
             android:launchMode="singleTask"
             android:screenOrientation="landscape" />
 
-        <service android:name=".service.RecordServer"/>
-        <service android:name="com.gkzxhn.prison.keda.vconf.VideoCapService"/>
-        <service android:name="com.gkzxhn.prison.service.ScreenRecordService"/>
+        <service android:name=".service.RecordServer" />
+        <service android:name="com.gkzxhn.prison.keda.vconf.VideoCapService" />
+        <service android:name="com.gkzxhn.prison.service.ScreenRecordService" />
         <!--<receiver android:name="com.gkzxhn.prison.receiver.USBStateReceiver"/>-->
-        <service android:name=".utils.RecordServer"/>
+        <service android:name=".utils.RecordServer" />
     </application>
 
 </manifest>

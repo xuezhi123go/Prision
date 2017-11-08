@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.gkzxhn.prison.R;
+import com.gkzxhn.prison.ZjVideoActivity;
 import com.gkzxhn.prison.adapter.MainAdapter;
 import com.gkzxhn.prison.adapter.OnItemClickListener;
 import com.gkzxhn.prison.common.Constants;
@@ -35,10 +36,11 @@ import com.netease.nimlib.sdk.StatusCode;
 import com.starlight.mobile.android.lib.view.CusSwipeRefreshLayout;
 import com.starlight.mobile.android.lib.view.RecycleViewDivider;
 import com.starlight.mobile.android.lib.view.dotsloading.DotsTextView;
+import com.zjrtc.ZjVideoManager;
 
 import java.util.List;
 
-public class MainActivity extends SuperActivity implements IMainView,CusSwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends SuperActivity implements IMainView, CusSwipeRefreshLayout.OnRefreshListener {
     private TextView tvMonth;
     private ViewPager mViewPager;
     private CustomDate mDate;
@@ -61,18 +63,20 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
         init();
         registerReceiver();
     }
-    private void initControls(){
-        tvMonth= (TextView) findViewById(R.id.main_layout_tv_month);
-        mViewPager= (ViewPager) findViewById(R.id.main_layout_vp_calendar);
+
+    private void initControls() {
+        tvMonth = (TextView) findViewById(R.id.main_layout_tv_month);
+        mViewPager = (ViewPager) findViewById(R.id.main_layout_vp_calendar);
         mRecylerView = (RecyclerView) findViewById(R.id.common_list_layout_rv_list);
-        tvLoading= (DotsTextView) findViewById(R.id.common_loading_layout_tv_load);
-        ivNodata=findViewById(R.id.common_no_data_layout_iv_image);
-        mSwipeRefresh= (CusSwipeRefreshLayout) findViewById(R.id.common_list_layout_swipeRefresh);
-        ((TextView)findViewById(R.id.common_no_data_layout_iv_hint)).setText(R.string.no_meeting_data);
+        tvLoading = (DotsTextView) findViewById(R.id.common_loading_layout_tv_load);
+        ivNodata = findViewById(R.id.common_no_data_layout_iv_image);
+        mSwipeRefresh = (CusSwipeRefreshLayout) findViewById(R.id.common_list_layout_swipeRefresh);
+        ((TextView) findViewById(R.id.common_no_data_layout_iv_hint)).setText(R.string.no_meeting_data);
     }
-    private void init(){
+
+    private void init() {
         initCalander();
-        adapter=new MainAdapter(this);
+        adapter = new MainAdapter(this);
         adapter.setOnItemClickListener(onItemClickListener);
         mSwipeRefresh.setColor(R.color.holo_blue_bright, R.color.holo_green_light,
                 R.color.holo_orange_light, R.color.holo_red_light);
@@ -81,42 +85,43 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
         mSwipeRefresh.setLoadNoFull(false);
         mSwipeRefresh.setOnRefreshListener(this);
         mRecylerView.setAdapter(adapter);
-        int sizeMenu=getResources().getDimensionPixelSize(R.dimen.recycler_view_line_height);
+        int sizeMenu = getResources().getDimensionPixelSize(R.dimen.recycler_view_line_height);
         mRecylerView.addItemDecoration(new RecycleViewDivider(
                 this, LinearLayoutManager.HORIZONTAL, sizeMenu, getResources().getColor(R.color.common_hint_text_color)));
 
         //初始化进度条
         mProgress = ProgressDialog.show(this, null, getString(R.string.please_waiting));
         dismissProgress();
-        mCancelVideoDialog=new CancelVideoDialog(this,false);
+        mCancelVideoDialog = new CancelVideoDialog(this, false);
         mCancelVideoDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String reason=mCancelVideoDialog.getContent();
+                String reason = mCancelVideoDialog.getContent();
                 mCancelVideoDialog.dismiss();
-                mPresenter.requestCancel(adapter.getCurrentItem().getId(),reason);
+                mPresenter.requestCancel(adapter.getCurrentItem().getId(), reason);
             }
         });
         //请求数据
-        mPresenter=new MainPresenter(this,this);
+        mPresenter = new MainPresenter(this, this);
 
         mPresenter.requestVersion();
 
 
     }
-    private void initCalander(){
+
+    private void initCalander() {
         CalendarCard[] views = new CalendarCard[3];
         for (int i = 0; i < 3; i++) {
             views[i] = new CalendarCard(this, onCellClickListener);
         }
-        CalendarViewAdapter  adapter = new CalendarViewAdapter(views);
+        CalendarViewAdapter adapter = new CalendarViewAdapter(views);
         mDate = CalendarCard.mShowDate;
         mViewPager.setAdapter(adapter);
         mViewPager.setCurrentItem(adapter.getCurrentIndex());
         mViewPager.addOnPageChangeListener(adapter.getOnPageChangeListener());
     }
 
-    private CalendarCard.OnCellClickListener onCellClickListener=new CalendarCard.OnCellClickListener() {
+    private CalendarCard.OnCellClickListener onCellClickListener = new CalendarCard.OnCellClickListener() {
         @Override
         public void clickDate(CustomDate date) {
             mDate = date;
@@ -128,8 +133,9 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
             tvMonth.setText(date.getYear() + getString(R.string.year) + date.getMonth() + getString(R.string.month));
         }
     };
-    public void onClickListener(View view){
-        switch (view.getId()){
+
+    public void onClickListener(View view) {
+        switch (view.getId()) {
             case R.id.main_layout_btn_last://上一个月
                 mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
 
@@ -138,7 +144,8 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
                 mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
                 break;
             case R.id.common_head_layout_iv_left:
-                startActivity(new Intent(this,SettingActivity.class));
+                startActivity(new Intent(this, SettingActivity.class));
+                //startVideoPage();
                 break;
             case R.id.common_head_layout_iv_right:
                 onRefresh();
@@ -150,7 +157,7 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
     @Override
     public void onRefresh() {
         mPresenter.checkStatusCode();
-        if(mPresenter.checkStatusCode()== StatusCode.LOGINED) {
+        if (mPresenter.checkStatusCode() == StatusCode.LOGINED) {
             //没有设置终端，则提示用户设置终端
             if (mPresenter.getSharedPreferences().getString(Constants.TERMINAL_ACCOUNT, "").length() == 0) {
                 stopRefreshAnim();
@@ -161,23 +168,25 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
             } else {
                 mPresenter.request(mDate.toString());
             }
-        }else{
+        } else {
             stopRefreshAnim();
         }
     }
-    private OnItemClickListener onItemClickListener=new OnItemClickListener() {
+
+    private OnItemClickListener onItemClickListener = new OnItemClickListener() {
         @Override
         public void onClickListener(View convertView, int position) {
-            switch (convertView.getId()){
+            switch (convertView.getId()) {
                 case R.id.main_item_layout_tv_cancel:
-                    if(mCancelVideoDialog!=null&&!mCancelVideoDialog.isShowing())mCancelVideoDialog.show();
+                    if (mCancelVideoDialog != null && !mCancelVideoDialog.isShowing())
+                        mCancelVideoDialog.show();
                     break;
                 default:
-                    Intent intent=new Intent(MainActivity.this,CallUserActivity.class);
-                    intent.putExtra(Constants.EXTRA,adapter.getCurrentItem().getId());
-                    intent.putExtra(Constants.EXTRAS,adapter.getCurrentItem().getYxAccount());
-                    intent.putExtra(Constants.EXTRA_TAB,adapter.getCurrentItem().getName());
-                    startActivityForResult(intent,Constants.EXTRA_CODE);
+                    Intent intent = new Intent(MainActivity.this, CallUserActivity.class);
+                    intent.putExtra(Constants.EXTRA, adapter.getCurrentItem().getId());
+                    intent.putExtra(Constants.EXTRAS, adapter.getCurrentItem().getYxAccount());
+                    intent.putExtra(Constants.EXTRA_TAB, adapter.getCurrentItem().getName());
+                    startActivityForResult(intent, Constants.EXTRA_CODE);
                     break;
             }
 
@@ -187,7 +196,7 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==Constants.EXTRA_CODE&&resultCode==RESULT_OK){
+        if (requestCode == Constants.EXTRA_CODE && resultCode == RESULT_OK) {
             onRefresh();
         }
     }
@@ -195,10 +204,10 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
     /**
      * 刷新动画加载
      */
-    private Handler handler=new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if(msg.what== Constants.START_REFRESH_UI){//开始动画
+            if (msg.what == Constants.START_REFRESH_UI) {//开始动画
                 if (adapter == null || adapter.getItemCount() == 0) {
                     if (ivNodata.isShown()) {
                         ivNodata.setVisibility(View.GONE);
@@ -212,7 +221,7 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
                 } else {
                     if (!mSwipeRefresh.isRefreshing()) mSwipeRefresh.setRefreshing(true);
                 }
-            }else if(msg.what== Constants.STOP_REFRESH_UI){//停止动画
+            } else if (msg.what == Constants.STOP_REFRESH_UI) {//停止动画
                 if (tvLoading.isPlaying() || tvLoading.isShown()) {
                     tvLoading.hideAndStop();
                     tvLoading.setVisibility(View.GONE);
@@ -231,12 +240,12 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
 
     @Override
     public void showProgress() {
-        if(mProgress!=null&&!mProgress.isShowing())mProgress.show();
+        if (mProgress != null && !mProgress.isShowing()) mProgress.show();
     }
 
     @Override
     public void dismissProgress() {
-        if(mProgress!=null&&mProgress.isShowing())mProgress.dismiss();
+        if (mProgress != null && mProgress.isShowing()) mProgress.dismiss();
     }
 
     @Override
@@ -259,20 +268,20 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
         try {
             packageInfo = pm.getPackageInfo(getPackageName(),
                     PackageManager.GET_CONFIGURATIONS);
-            int currentVersion=packageInfo.versionCode;//当前App版本
-            int lastIgnoreVersion= mPresenter.getSharedPreferences().getInt(Constants.LAST_IGNORE_VERSION,0);
-            boolean isIgoreVersion=lastIgnoreVersion==newVersion;//若是已忽略的版本，则不弹出升级对话框
-            if(version.isForce())isIgoreVersion=false;
-            if (newVersion > currentVersion&&!isIgoreVersion) {//新版本大于当前版本，则弹出更新下载到对话框
+            int currentVersion = packageInfo.versionCode;//当前App版本
+            int lastIgnoreVersion = mPresenter.getSharedPreferences().getInt(Constants.LAST_IGNORE_VERSION, 0);
+            boolean isIgoreVersion = lastIgnoreVersion == newVersion;//若是已忽略的版本，则不弹出升级对话框
+            if (version.isForce()) isIgoreVersion = false;
+            if (newVersion > currentVersion && !isIgoreVersion) {//新版本大于当前版本，则弹出更新下载到对话框
                 //版本名
-                String versionName =  version.getVersionName();
+                String versionName = version.getVersionName();
                 // 下载地址
-                String downloadUrl =  version.getDownloadUrl();
+                String downloadUrl = version.getDownloadUrl();
                 //是否强制更新
-                boolean isForceUpdate= version.isForce();
-                if(updateDialog==null)updateDialog=new UpdateDialog(this);
+                boolean isForceUpdate = version.isForce();
+                if (updateDialog == null) updateDialog = new UpdateDialog(this);
                 updateDialog.setForceUpdate(isForceUpdate);
-                updateDialog.setDownloadInfor(versionName,newVersion,downloadUrl);
+                updateDialog.setDownloadInfor(versionName, newVersion, downloadUrl);
                 updateDialog.show();//显示对话框
             }
 
@@ -290,18 +299,22 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
     @Override
     protected void onResume() {
         super.onResume();
-        if(updateDialog!=null&&updateDialog.isShowing())updateDialog.measureWindow();
-        if(mShowTerminalDialog!=null&&mShowTerminalDialog.isShowing())mShowTerminalDialog.measureWindow();
-        if(mCancelVideoDialog!=null&&mCancelVideoDialog.isShowing())mCancelVideoDialog.measureWindow();
+        if (updateDialog != null && updateDialog.isShowing()) updateDialog.measureWindow();
+        if (mShowTerminalDialog != null && mShowTerminalDialog.isShowing())
+            mShowTerminalDialog.measureWindow();
+        if (mCancelVideoDialog != null && mCancelVideoDialog.isShowing())
+            mCancelVideoDialog.measureWindow();
         onRefresh();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if(updateDialog!=null&&updateDialog.isShowing())updateDialog.measureWindow();
-        if(mShowTerminalDialog!=null&&mShowTerminalDialog.isShowing())mShowTerminalDialog.measureWindow();
-        if(mCancelVideoDialog!=null&&mCancelVideoDialog.isShowing())mCancelVideoDialog.measureWindow();
+        if (updateDialog != null && updateDialog.isShowing()) updateDialog.measureWindow();
+        if (mShowTerminalDialog != null && mShowTerminalDialog.isShowing())
+            mShowTerminalDialog.measureWindow();
+        if (mCancelVideoDialog != null && mCancelVideoDialog.isShowing())
+            mCancelVideoDialog.measureWindow();
 
     }
 
@@ -313,33 +326,48 @@ public class MainActivity extends SuperActivity implements IMainView,CusSwipeRef
     @Override
     protected void onDestroy() {
         unregisterReceiver(mBroadcastReceiver);//注销广播监听器
-        if(mShowTerminalDialog!=null&&mShowTerminalDialog.isShowing())mShowTerminalDialog.dismiss();
-        if(mCancelVideoDialog!=null&&mCancelVideoDialog.isShowing())mCancelVideoDialog.dismiss();
-        if(updateDialog!=null&&updateDialog.isShowing())updateDialog.dismiss();
+        if (mShowTerminalDialog != null && mShowTerminalDialog.isShowing())
+            mShowTerminalDialog.dismiss();
+        if (mCancelVideoDialog != null && mCancelVideoDialog.isShowing())
+            mCancelVideoDialog.dismiss();
+        if (updateDialog != null && updateDialog.isShowing()) updateDialog.dismiss();
         super.onDestroy();
     }
-    private BroadcastReceiver mBroadcastReceiver=new BroadcastReceiver() {
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(Constants.NIM_KIT_OUT)){
+            if (intent.getAction().equals(Constants.NIM_KIT_OUT)) {
                 finish();
             }
         }
     };
+
     /**
      * 注册广播监听器
      */
-    private void registerReceiver(){
-        IntentFilter intentFilter=new IntentFilter();
+    private void registerReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.NIM_KIT_OUT);
-        registerReceiver(mBroadcastReceiver,intentFilter);
+        registerReceiver(mBroadcastReceiver, intentFilter);
     }
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         startActivity(intent);
+    }
+
+    private void startVideoPage() {
+        // 设置服务器器地址、显示名称、呼叫地址、呼叫密码；
+        ZjVideoManager.getInstance().setDomain("cs.zijingcloud.com");
+        ZjVideoManager.getInstance().setDisplayName("suibian");
+        ZjVideoManager.getInstance().setAddress("fangyuxing@zijingcloud.com");
+        ZjVideoManager.getInstance().setPwd("");
+        startActivity(new Intent(this, ZjVideoActivity.class));
+
     }
 
 }

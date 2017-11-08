@@ -3,13 +3,13 @@ package com.gkzxhn.prison.presenter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.gkzxhn.prison.R;
 import com.gkzxhn.prison.common.Constants;
 import com.gkzxhn.prison.common.GKApplication;
 import com.gkzxhn.prison.model.IBaseModel;
 import com.gkzxhn.prison.model.iml.BaseModel;
-import com.gkzxhn.prison.utils.KDInitUtil;
 import com.gkzxhn.prison.view.ILoginView;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -21,6 +21,8 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
  */
 
 public class LoginPresenter extends BasePresenter<IBaseModel,ILoginView>{
+    private static final String TAG = "LoginPresenter";
+
     public LoginPresenter(Context context, ILoginView view) {
         super(context, new BaseModel(), view);
     }
@@ -30,6 +32,7 @@ public class LoginPresenter extends BasePresenter<IBaseModel,ILoginView>{
      * @param password
      */
     public void login(final String account, final String password){
+        Log.e(TAG,"进入Login方法");
         ILoginView view=mWeakView==null?null:mWeakView.get();
         if(view!=null)view.startRefreshAnim();
         LoginInfo info = new LoginInfo(account, password);
@@ -41,7 +44,7 @@ public class LoginPresenter extends BasePresenter<IBaseModel,ILoginView>{
                         ILoginView view=mWeakView==null?null:mWeakView.get();
                         if(view!=null) {
                             //登录科达GK
-                            KDInitUtil.login();
+                            //KDInitUtil.login();
                             //保存登录信息
                             SharedPreferences.Editor editor=sharedPreferences.edit();
                             editor.putString(Constants.USER_ACCOUNT,account);

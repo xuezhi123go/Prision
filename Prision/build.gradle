@@ -11,7 +11,7 @@ android {
         }
     }
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId 'com.gkzxhn.prison'
         minSdkVersion 18
@@ -20,7 +20,7 @@ android {
         versionName '1.0.7'
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
-            abiFilters "armeabi-v7a"
+            abiFilters "armeabi-v7a", "x86"
         }
     }
     buildTypes {
@@ -38,6 +38,13 @@ android {
     }
 
 }
+// 解决 Error:Conflict with dependency 'com.google.code.findbugs:jsr305 '
+configurations.all { resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.0' }
+repositories {
+// 配置 aar
+    flatDir { dirs 'libs' }
+}
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -59,9 +66,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(':base_lib_system')
     compile 'eu.the4thfloor.volley:com.android.volley:2015.05.28'
-    compile files('libs/kdmediasdk.jar')
-    compile files('libs/kdmobilesdk-V5.0.0.2.1.jar')
+    //compile files('libs/kdmediasdk.jar')
+    //compile files('libs/kdmobilesdk-V5.0.0.2.1.jar')
     compile 'com.netease.nimlib:basesdk:3.2.0'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'io.reactivex:rxjava:1.2.9'
+
+    compile 'com.facebook.react:react-native:+'
+    compile(name: 'zjrtc-v1.8.2', ext: 'aar') // 添加 aar 包
 }

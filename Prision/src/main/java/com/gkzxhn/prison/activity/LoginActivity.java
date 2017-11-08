@@ -6,15 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.gkzxhn.prison.R;
 import com.gkzxhn.prison.common.Constants;
-import com.gkzxhn.prison.common.GKApplication;
 import com.gkzxhn.prison.presenter.LoginPresenter;
-import com.gkzxhn.prison.utils.Utils;
 import com.gkzxhn.prison.view.ILoginView;
 
 /**
@@ -25,6 +23,8 @@ public class LoginActivity  extends SuperActivity implements ILoginView{
     private EditText etAccount,etPassword;
     private LoginPresenter mPresenter;
     private ProgressDialog mProgress;
+    private static final String TAG = "LoginActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +58,7 @@ public class LoginActivity  extends SuperActivity implements ILoginView{
             }else if(password.length()==0){
                 showToast(getString(R.string.please_input)+getString(R.string.password));
             }else{
+                Log.e(TAG,"执行login方法之前");
                 mPresenter.login(account,password);
             }
         }
